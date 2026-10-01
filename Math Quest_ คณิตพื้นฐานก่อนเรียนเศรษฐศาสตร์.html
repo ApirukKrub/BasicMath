@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Math Quest: คณิตพื้นฐานก่อนเรียนเศรษฐศาสตร์</title>
+<meta name="description" content="ฝึกสูตรคูณ การหาร การบวกทด และโจทย์ TR, TC, กำไร ในรูปแบบเกมร้านกาแฟ สำหรับนักศึกษาปี 1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eee8; --paper:#f8faf6; --paper-2:#dfe8e1; --ink:#14332a; --ink-2:#4b675d; --line:#c3d2c7;
+  --board:#24463c; --board-ink:#f4f1e8; --board-dim:#c9d6cf; --frame:#8a6340;
+  --btn:#14332a; --btn-ink:#f4f1e8; --coin:#9a6a06; --ok:#1d7a50; --ok-bg:#d8eee1;
+  --err:#a8435a; --err-bg:#f6e0e5; --info:#25609c; --info-bg:#dce8f5; --hit:#f2d16b;
+  --chalk-ok:#9fe3c4; --chalk-err:#f2a7b3; --chalk-info:#9cc8ef;
+  --f-hand:'Mali','IBM Plex Sans Thai',Tahoma,sans-serif;
+  --f-body:'IBM Plex Sans Thai','Noto Sans Thai',Tahoma,'Leelawadee UI',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1d18; --paper:#152c26; --paper-2:#1c3830; --ink:#eaf1eb; --ink-2:#a7bfb3; --line:#2b4a3f;
+    --board:#1a3a30; --frame:#6b4a2f;
+    --btn:#f2d16b; --btn-ink:#1b2a22; --coin:#f2d16b; --ok:#9fe3c4; --ok-bg:#173b2e;
+    --err:#f2a7b3; --err-bg:#3b1e26; --info:#9cc8ef; --info-bg:#172d42;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1d18; --paper:#152c26; --paper-2:#1c3830; --ink:#eaf1eb; --ink-2:#a7bfb3; --line:#2b4a3f;
+  --board:#1a3a30; --frame:#6b4a2f;
+  --btn:#f2d16b; --btn-ink:#1b2a22; --coin:#f2d16b; --ok:#9fe3c4; --ok-bg:#173b2e;
+  --err:#f2a7b3; --err-bg:#3b1e26; --info:#9cc8ef; --info-bg:#172d42;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--hit);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-hand);line-height:1.3;margin:0 0 .4em}
+h2{font-size:1.35rem} h3{font-size:1.1rem}
+p{margin:.3em 0}
+.muted{color:var(--ink-2)}
+.center{text-align:center}
+.sub{font-size:.92em;color:inherit;opacity:.85;margin-top:4px}
+
+/* HUD */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.hud-in{max-width:600px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.brand{background:none;border:0;padding:4px 0;font-family:var(--f-hand);font-weight:700;font-size:1.15rem;display:flex;align-items:baseline;gap:8px}
+.brand small{font-family:var(--f-body);font-weight:500;font-size:.78rem;color:var(--ink-2)}
+.hud-stats{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:.92rem}
+.hud-stats b{font-variant-numeric:tabular-nums;margin-left:2px}
+.hud-rank{flex-basis:100%;font-size:.82rem;color:var(--ink-2);order:3}
+.icon-btn{background:var(--paper);border:1px solid var(--line);border-radius:999px;width:34px;height:34px;display:grid;place-items:center}
+.coin{color:var(--coin);font-weight:600}
+
+main{max-width:600px;margin:0 auto;padding:16px 16px 56px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+
+/* Buttons */
+.btn{background:var(--btn);color:var(--btn-ink);border:0;border-radius:12px;padding:.7rem 1.1rem;min-height:48px;font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{min-height:40px;padding:.45rem .9rem;font-size:.92rem}
+.btn.danger{background:var(--err);color:#fff}
+.link{background:none;border:0;padding:6px 0;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* Hero: the menu board */
+.board{background:var(--board);color:var(--board-ink);border:10px solid var(--frame);border-radius:18px;padding:18px 18px 20px;margin:14px 0;box-shadow:inset 0 0 40px rgba(0,0,0,.25)}
+.board h1{font-size:1.55rem;margin-bottom:.2em}
+.board p{color:var(--board-dim)}
+.board .tag{border-color:#f4f1e855;background:#ffffff12;color:var(--board-ink)}
+.board .btn{background:var(--hit);color:#1b2a22}
+.board .btn.ghost{background:transparent;color:var(--board-ink);border-color:#f4f1e866}
+.board .link{color:var(--board-dim)}
+.board-formula{font-family:var(--f-hand);font-size:1.25rem;margin-top:10px;color:var(--hit)}
+.rankline{margin-top:14px;font-size:.92rem}
+.bar{height:8px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin-top:6px}
+.board .bar{background:#ffffff1f}
+.bar i{display:block;height:100%;background:var(--coin);border-radius:99px;transition:width .4s}
+.board .bar i{background:var(--hit)}
+.namebox{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.namebox input{flex:1;min-width:140px;background:#ffffff14;border:2px solid #f4f1e855;border-radius:10px;padding:.5rem .8rem;color:var(--board-ink)}
+
+/* Quest list */
+.quests{display:grid;gap:10px}
+.quest{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+.quest:hover:not(.locked){border-color:var(--ink-2)}
+.quest.locked{opacity:.55}
+.qletter{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-hand);font-weight:700;font-size:1.2rem;background:var(--paper-2)}
+.quest.done .qletter{background:var(--ok-bg);color:var(--ok)}
+.qbody{display:flex;flex-direction:column;gap:2px}
+.qtitle{font-weight:600}
+.qdesc{font-size:.9rem;color:var(--ink-2)}
+.qstatus{font-size:.84rem;margin-top:2px}
+.quest.done .qstatus{color:var(--ok)}
+
+/* Question screen */
+.qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.qmeta{font-size:.9rem;color:var(--ink-2)}
+.note{font-size:.92rem;color:var(--ink-2);margin-top:10px}
+.ctx{margin-bottom:10px}
+.ctx p{color:var(--board-ink);font-size:1.05rem}
+.panel .ctx p{color:var(--ink)}
+.tag{display:inline-block;font-size:.85rem;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);margin-bottom:6px}
+.expr{font-family:var(--f-hand);font-weight:700;font-size:clamp(2.3rem,10vw,3.2rem);text-align:center;letter-spacing:.02em;line-height:1.25;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.expr.sm{font-size:clamp(1.7rem,7vw,2.2rem)}
+.qm{color:var(--hit)}
+.panel .qm{color:var(--coin)}
+.pair{text-align:center;font-family:var(--f-hand);font-size:1.25rem;color:var(--board-dim)}
+.answer-row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:14px}
+.ans-input{width:7.5ch;height:56px;text-align:center;font-family:var(--f-hand);font-weight:700;font-size:1.8rem;font-variant-numeric:tabular-nums;border-radius:12px;border:2px solid var(--line);background:var(--paper)}
+.board .ans-input{background:#ffffff14;border-color:#f4f1e866;color:var(--board-ink)}
+.ans-input:disabled{opacity:.7}
+.unit{color:var(--board-dim)}
+.panel .unit{color:var(--ink-2)}
+.warn{min-height:0;font-size:.9rem;color:var(--chalk-err);text-align:center;margin-top:6px}
+.panel .warn{color:var(--err)}
+.fb{margin-top:12px;padding:12px 14px;border-radius:10px;border-left:5px solid}
+.fb.ok{background:var(--ok-bg);border-color:var(--ok)}
+.fb.err{background:var(--err-bg);border-color:var(--err)}
+.fb.sol{background:var(--info-bg);border-color:var(--info)}
+.gain{color:var(--coin);font-weight:700;white-space:nowrap}
+.solution{margin-top:6px;font-size:1.05rem}
+.steps{margin-top:6px;font-size:.95rem}
+.hints{margin-top:12px}
+.hint{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--info-bg);border-left:5px solid var(--info)}
+.mtable{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px;margin-top:6px;font-variant-numeric:tabular-nums}
+.mtable span{padding:2px 6px;border-radius:6px}
+.mtable .hit{background:var(--hit);color:#1b2a22;font-weight:700}
+
+/* Fact grid */
+.fgrid{display:grid;grid-template-columns:2.2rem repeat(8,minmax(0,1fr));gap:4px;font-variant-numeric:tabular-nums;max-width:420px}
+.fgrid .h{font-size:.8rem;color:var(--ink-2);text-align:center;align-self:center}
+.fcell{aspect-ratio:1;border-radius:8px;display:grid;place-items:center;font-size:.95rem;background:var(--paper-2);color:var(--ink-2)}
+.fcell.p{background:#f2d16b55;color:var(--ink)}
+.fcell.m{background:var(--ok-bg);color:var(--ok);font-weight:700}
+.fcell.cur{outline:2.5px solid var(--ink);outline-offset:1px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.84rem;color:var(--ink-2);margin-top:8px}
+
+/* Column addition (on board) */
+.colwrap{display:flex;justify-content:center;margin:10px 0 4px}
+.colgrid{display:grid;gap:4px 8px;align-items:center;justify-items:center}
+.cg{display:flex;align-items:center;justify-content:center;font-family:var(--f-hand);font-weight:700;font-size:2rem;height:3.1rem;min-width:2.9rem}
+.cg.names{font-family:var(--f-body);font-weight:500;font-size:.75rem;height:1.3rem;color:var(--board-dim)}
+.cg.crow{height:2.5rem}
+.cg.rule{height:3px;width:100%;min-width:0;background:var(--board-ink);border-radius:3px;grid-column:1 / -1}
+.cbox{text-align:center;font-family:var(--f-hand);font-weight:700;background:#ffffff14;color:var(--board-ink);border:2px solid #f4f1e866;border-radius:10px;font-variant-numeric:tabular-nums;padding:0}
+.cbox.ans{width:2.8rem;height:3rem;font-size:1.8rem}
+.cbox.carry{width:2.1rem;height:2.1rem;font-size:1.1rem;border-style:dashed;color:var(--hit)}
+.cbox.good{border-color:var(--chalk-ok);background:#9fe3c41f}
+.cbox.bad{border-color:var(--chalk-err);background:#f2a7b326}
+.cbox.sol{border-color:var(--chalk-info);border-style:solid;background:#9cc8ef1f}
+.cbox:disabled{opacity:1}
+.colhelp{font-size:.88rem;color:var(--board-dim);text-align:center}
+.inv{margin-top:16px;padding-top:12px;border-top:1px dashed #f4f1e855}
+
+/* Explorer */
+.steppers{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.stepper{display:flex;align-items:center;gap:8px;background:var(--paper-2);border-radius:999px;padding:4px 6px 4px 14px}
+.stepper b{font-family:var(--f-hand);font-size:1.4rem;min-width:1.4em;text-align:center}
+.sbtn{width:40px;height:40px;border-radius:50%;border:0;background:var(--btn);color:var(--btn-ink);font-size:1.3rem;line-height:1}
+.dots{display:grid;gap:7px;justify-content:center;margin:14px 0 6px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--coin)}
+.dots i.alt{background:var(--ink-2)}
+.family{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.family div{font-family:var(--f-hand);font-weight:700;font-size:1.3rem;text-align:center;padding:8px;border-radius:10px;background:var(--paper-2)}
+.family div:nth-child(n+3){background:var(--ok-bg);color:var(--ok)}
+.pill{display:inline-block;font-family:var(--f-body);font-size:.8rem;font-weight:600;padding:1px 10px;border-radius:999px;background:var(--paper-2);vertical-align:middle;margin-left:6px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+
+/* Tables */
+.tblwrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{color:var(--ink-2);font-weight:500}
+.yes{color:var(--ok);font-weight:700}
+.no{color:var(--err);font-weight:700}
+.big{font-family:var(--f-hand);font-weight:700;font-size:2.4rem;line-height:1.1}
+.copyarea{width:100%;min-height:200px;font-size:.85rem;border-radius:10px;border:1px solid var(--line);background:var(--paper-2);padding:10px;margin-top:8px}
+
+/* Toasts */
+#toasts{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:50;padding:0 16px}
+.toast{background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:.95rem;box-shadow:0 6px 20px rgba(0,0,0,.25);animation:pop .25s ease-out;max-width:100%;text-align:center}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.toast{animation:none}.bar i{transition:none}}
+/* Equations */
+.scale{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.pan{font-family:var(--f-hand);font-weight:700;font-size:clamp(1.6rem,7vw,2.2rem);padding:6px 16px;border:2px solid #f4f1e866;border-radius:12px;min-width:4.5rem;text-align:center}
+.eqs{font-family:var(--f-hand);font-size:2rem;font-weight:700;color:var(--hit)}
+.beam{height:4px;background:var(--board-ink);border-radius:4px;margin:12px auto 18px;width:80%;position:relative}
+.beam::after{content:'';position:absolute;left:50%;top:4px;transform:translateX(-50%);border:12px solid transparent;border-top:0;border-bottom-color:var(--hit)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.opt{background:#ffffff14;color:var(--board-ink);border:1.5px solid #f4f1e866;border-radius:12px;padding:.55rem;min-height:48px;font-weight:600}
+.opt:hover{border-color:var(--hit)}
+.solved{font-family:var(--f-hand);font-weight:700;font-size:2rem;text-align:center;color:var(--hit)}
+.logrow{padding:10px 0;border-bottom:1px solid var(--line)}
+.logrow:last-child{border-bottom:0}
+.logrow .short{font-size:.9rem;color:var(--ink-2)}
+.logrow .res{font-family:var(--f-hand);font-weight:700;font-size:1.15rem}
+.work{margin-top:8px}
+.wline{font-family:var(--f-hand);font-weight:700;font-size:1.25rem;text-align:center;padding:2px 0}
+.wline.ok{color:var(--chalk-ok)}
+.wline.sol{color:var(--chalk-info)}
+.stepq{text-align:center;color:var(--board-dim);margin-top:12px}
+.lhs{font-family:var(--f-hand);font-weight:700;font-size:1.8rem}
+@media (max-width:380px){.board{border-width:7px;padding:14px}.cg{min-width:2.5rem}.cbox.ans{width:2.5rem}}
+</style>
+</head>
+<body>
+<header class="hud">
+  <div class="hud-in">
+    <button class="brand" id="homeBtn" aria-label="กลับแผนที่ภารกิจ">Math Quest <small>Marginal Café</small></button>
+    <div class="hud-stats">
+      <span class="coin" title="เงินร้าน">฿<b id="hudCoins">0</b></span>
+      <span title="ตอบถูกติดกัน">🔥<b id="hudStreak">0</b></span>
+      <span title="จำนวนวันที่ฝึก">📅<b id="hudDays">0</b></span>
+      <button class="icon-btn" id="themeBtn" aria-label="สลับโหมดสว่าง/มืด">◐</button>
+    </div>
+    <div class="hud-rank" id="hudRank"></div>
+  </div>
+</header>
+<main id="app"></main>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+const MQ = (function(){
+'use strict';
+const hasDOM = typeof document !== 'undefined';
+const $ = s => document.querySelector(s);
+
+/* ---------- utilities ---------- */
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const THAI_DIGITS = '๐๑๒๓๔๕๖๗๘๙';
+function normDigits(s){ return String(s).replace(/[๐-๙]/g, d => String(THAI_DIGITS.indexOf(d))); }
+function parseNum(str){
+  const s = normDigits(str == null ? '' : str).replace(/[\s,]/g,'');
+  if(s === '') return {ok:false, empty:true};
+  if(!/^-?\d+$/.test(s)) return {ok:false, bad:true};
+  return {ok:true, n:parseInt(s,10)};
+}
+function digitsOf(n){ return String(n).split('').reverse().map(Number); }
+function carriesOf(a,b){
+  const da=digitsOf(a), db=digitsOf(b), n=Math.max(da.length,db.length)+1, cin=[0];
+  for(let i=0;i<n;i++){ const s=(da[i]||0)+(db[i]||0)+cin[i]; cin.push(s>=10?1:0); }
+  return cin;
+}
+function noCarrySum(a,b){
+  const da=digitsOf(a), db=digitsOf(b), n=Math.max(da.length,db.length);
+  let r=0, p=1;
+  for(let i=0;i<n;i++){ r += (((da[i]||0)+(db[i]||0))%10)*p; p*=10; }
+  return r;
+}
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const fmtT = ms => (ms/1000).toFixed(1)+' วิ';
+const pct = (c,n) => n ? Math.round(c/n*100)+'%' : '–';
+const NAMES = ['หน่วย','สิบ','ร้อย','พัน'];
+const ERR_NAMES = {carry:'ลืมทดหรือทดผิด', column:'คำนวณผิดในหลัก', fact:'สูตรคูณผิด', inverse:'ไม่ได้ใช้การคูณย้อนกลับ', sign:'ย้ายข้างแล้วไม่เปลี่ยนเครื่องหมาย'};
+const TYPE_NAMES = {mul:'การคูณ', div:'การหาร', add:'การบวกตั้งหลัก', econ:'โจทย์เศรษฐศาสตร์', eq:'สมการและการย้ายข้าง'};
+const BAD_INPUT = 'พิมพ์ได้เฉพาะตัวเลข ถ้าแป้นพิมพ์เป็นภาษาไทยอยู่ ให้สลับเป็นภาษาอังกฤษ หรือพิมพ์เลขไทยก็ได้';
+
+/* ---------- state ---------- */
+const KEY = 'mathquest.v1';
+function fresh(){
+  return {v:1, name:'', coins:0, streak:0, best:0, days:[], pre:null, post:null, facts:{}, ff:0,
+    rounds:{B:0,C:0,D:0,E:0,F:0,BAL:0,EQ:0}, balDone:[],
+    stats:{mul:{n:0,c:0,t:0}, div:{n:0,c:0,t:0}, add:{n:0,c:0,t:0}, econ:{n:0,c:0,t:0}, eq:{n:0,c:0,t:0}},
+    errs:{carry:0,column:0,fact:0,inverse:0,sign:0}, miss:{}, theme:''};
+}
+let S = fresh();
+let storageOK = true;
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return;
+    const o = JSON.parse(raw);
+    if(o && o.v === 1){
+      const f = fresh();
+      S = Object.assign(f, o);
+      S.stats = Object.assign(fresh().stats, o.stats||{});
+      S.errs = Object.assign(fresh().errs, o.errs||{});
+      S.rounds = Object.assign(fresh().rounds, o.rounds||{});
+    }
+  }catch(e){ storageOK = false; }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOK = false; } }
+function markDay(){ const d=today(); if(!S.days.includes(d)){ S.days.push(d); if(S.days.length>400) S.days.shift(); } }
+function record(type, firstOK, t){ const s=S.stats[type]; s.n++; if(firstOK) s.c++; s.t += Math.min(t,120000); }
+function miss(label, kind){ const m = S.miss[label] || (S.miss[label]={w:0,s:0}); m[kind]++; }
+
+const RANKS = [[0,'เด็กฝึกงาน'],[150,'แคชเชียร์มือใหม่'],[400,'แคชเชียร์ตัวจริง'],[800,'หัวหน้ากะ'],[1400,'ผู้จัดการร้าน'],[2200,'เจ้าของกิจการ'],[3200,'นักเศรษฐศาสตร์ฝึกหัด']];
+function rankIdx(c){ let i=0; RANKS.forEach((r,k)=>{ if(c>=r[0]) i=k; }); return i; }
+function addCoins(n){
+  const before = rankIdx(S.coins);
+  S.coins += n;
+  const after = rankIdx(S.coins);
+  if(after > before) toast('เลื่อนตำแหน่งเป็น '+RANKS[after][1]+' 🎉');
+  renderHUD();
+}
+
+/* ---------- multiplication facts ---------- */
+const FA=[6,7,8,9], FB=[2,3,4,5,6,7,8,9];
+function mulStrategy(a,b){
+  const has = x => a===x || b===x;
+  const other = x => a===x ? b : a;
+  if(has(7) && has(8)) return {hint:'จำลำดับ 5-6-7-8 → <b>?</b> = 7 × 8', full:'5-6-7-8 → <b>56</b> = 7 × 8'};
+  if(has(9)){ const n=other(9); return {hint:`9 × ${n} = 10 × ${n} − ${n} → ${10*n} − ${n} = <b>?</b>`, full:`9 × ${n} = ${10*n} − ${n} = <b>${9*n}</b>`}; }
+  if(has(6)){ const n=other(6); return {hint:`6 × ${n} = 5 × ${n} + ${n} → ${5*n} + ${n} = <b>?</b>`, full:`6 × ${n} = ${5*n} + ${n} = <b>${6*n}</b>`}; }
+  if(has(8)){ const n=other(8); return {hint:`เพิ่มเท่าตัว 3 ครั้ง: ${n} → ${2*n} → ${4*n} → <b>?</b>`, full:`เพิ่มเท่าตัว 3 ครั้ง: ${n} → ${2*n} → ${4*n} → <b>${8*n}</b>`}; }
+  const n = other(7);
+  return {hint:`7 × ${n} = 7 × ${n-1} + 7 → ${7*(n-1)} + 7 = <b>?</b>`, full:`7 × ${n} = ${7*(n-1)} + 7 = <b>${7*n}</b>`};
+}
+function factRec(k){ return S.facts[k] || (S.facts[k]={st:0,ok:0,w:0,s:0}); }
+function updateFact(k, ok, t){
+  const f = factRec(k);
+  if(ok && t<=5000){ f.ok++; f.st = f.ok>=3 ? 2 : 1; }
+  else if(ok){ f.ok=0; f.s++; f.st=1; }
+  else { f.ok=0; f.w++; f.st=1; }
+}
+function pickFact(lastKey){
+  const pool=[];
+  FA.forEach(a=>FB.forEach(b=>{
+    const k=`${a}x${b}`; if(k===lastKey) return;
+    const f=S.facts[k]; let w;
+    if(!f || f.st===0) w=3; else if(f.st===1) w=4+Math.min((f.w||0)+(f.s||0),6); else w=1;
+    pool.push([a,b,w]);
+  }));
+  const tot=pool.reduce((s,p)=>s+p[2],0); let r=Math.random()*tot;
+  for(const p of pool){ r-=p[2]; if(r<=0) return [p[0],p[1]]; }
+  return [pool[0][0],pool[0][1]];
+}
+function masteredCount(){ return Object.values(S.facts).filter(f=>f.st===2).length; }
+
+/* ---------- question factories ---------- */
+function mulQ(a,b){
+  const swap = Math.random()<.5, x = swap?b:a, y = swap?a:b, c=a*b, st=mulStrategy(a,b);
+  return {type:'mul', key:`${a}x${b}`, label:`${Math.min(a,b)} × ${Math.max(a,b)}`, expr:`${x} × ${y}`, answer:c,
+    wrong(ans){ const near = Math.abs(ans-c)<=2 ? 'ใกล้มากแล้ว ' : ''; return {err:'fact', msg:`${near}ลองคิดแบบนี้: ${st.hint}`}; },
+    solution:`${x} × ${y} = <b>${c}</b><div class="sub">วิธีคิด: ${st.full}</div>`,
+    praise:`ถูกต้อง: ${x} × ${y} = ${c}`};
+}
+function tableHTML(d,target){ let h='<div class="mtable">'; for(let i=1;i<=9;i++){ const v=d*i; h+=`<span class="${v===target?'hit':''}">${d} × ${i} = ${v}</span>`; } return h+'</div>'; }
+function divQ(d,q){
+  const n=d*q;
+  return {type:'div', label:`${n} ÷ ${d}`, expr:`${n} ÷ ${d}`, pair:`${d} × <span class="qm">?</span> = ${n}`, answer:q,
+    wrong(ans){ const p=d*ans; return {err:'inverse', msg:`ลองตรวจคำตอบ: ${d} × ${ans} = ${p} ไม่ใช่ ${n} คำตอบจึงต้อง<b>${p<n?'มากกว่านี้':'น้อยกว่านี้'}</b>`}; },
+    hints:['การหารคือการคูณย้อนกลับ ถามตัวเองว่า “ตัวหารคูณอะไรแล้วได้ตัวตั้ง”', `${d} × ? = ${n}`, `ไล่แม่ ${d} หาเลข ${n}:`+tableHTML(d,n)],
+    solution:`${d} × ${q} = ${n} ดังนั้น ${n} ÷ ${d} = <b>${q}</b>`,
+    praise:`ถูกต้อง: ${d} × ${q} = ${n} ดังนั้น ${n} ÷ ${d} = ${q}`};
+}
+function colParts(a,b,i){ const da=digitsOf(a), db=digitsOf(b), p=[]; if(i<da.length) p.push(da[i]); if(i<db.length) p.push(db[i]); return p.join(' + '); }
+function addSteps(a,b){
+  const da=digitsOf(a), db=digitsOf(b), cin=carriesOf(a,b), s=a+b, n=String(s).length, lines=[];
+  for(let i=0;i<n;i++){
+    const parts=[]; let tot=cin[i];
+    if(i<da.length){ parts.push(da[i]); tot+=da[i]; }
+    if(i<db.length){ parts.push(db[i]); tot+=db[i]; }
+    if(cin[i]) parts.push('ตัวทด 1');
+    lines.push(tot>=10 ? `หลัก${NAMES[i]}: ${parts.join(' + ')} = ${tot} เขียน ${tot%10} ทด 1` : `หลัก${NAMES[i]}: ${parts.join(' + ')} = ${tot}`);
+  }
+  return `${a} + ${b} = <b>${s}</b><div class="steps">${lines.map(l=>`<div>${l}</div>`).join('')}</div>`;
+}
+function addQ(a,b,ctx,type){
+  const s=a+b, nc=noCarrySum(a,b);
+  return {type:type||'add', label:`${a} + ${b}`, expr: ctx ? null : `${a} + ${b}`, ctx: ctx||null, answer:s,
+    wrong(ans){
+      if(ans===nc && nc!==s) return {err:'carry', msg:'ดูเหมือนจะลืมทด ลองตั้งหลักแล้วบวกจากหลักหน่วย ถ้าหลักไหนได้ 10 ขึ้นไป ให้เขียนเฉพาะหลักหน่วยแล้วทด 1 ไปหลักถัดไป'};
+      return {err:'column', msg:`ลองตั้งหลักแล้วบวกทีละหลักจากขวาไปซ้าย จากนั้นตรวจย้อนกลับ: คำตอบ − ${b} ต้องได้ ${a}`};
+    },
+    solution:addSteps(a,b), praise:`ถูกต้อง: ${a} + ${b} = ${s}`};
+}
+function genAdd(kind){
+  for(let t=0;t<800;t++){
+    let a,b;
+    if(kind==='22'){ a=rnd(12,89); b=rnd(12,89); }
+    else if(kind==='32'){ a=rnd(101,899); b=rnd(12,99); }
+    else { a=rnd(101,599); b=rnd(101,399); }
+    if(a+b>999) continue;
+    const c=carriesOf(a,b);
+    if(kind==='32'){ if(c[1]&&c[2]) return {a,b}; }
+    else if(c.some(x=>x)) return {a,b};
+  }
+  return {a:137,b:64};
+}
+
+/* ---------- economics problems ---------- */
+const GOODS_T=[['ชานม','แก้ว'],['กาแฟเย็น','แก้ว'],['ข้าวกล่อง','กล่อง'],['น้ำผลไม้','ขวด'],['เค้ก','ชิ้น']];
+const GOODS_U=[['ลูกชิ้น','ไม้'],['ไข่ต้ม','ฟอง']];
+function priceSet(qMin, forceTens){
+  const tens = forceTens || Math.random()<.65;
+  const g = pick(tens?GOODS_T:GOODS_U), p=rnd(6,9), P=tens?p*10:p, Q=rnd(qMin||2,9);
+  return {g,p,P,Q,TR:P*Q};
+}
+function econTR(){
+  const {g,p,P,Q,TR}=priceSet(), st=mulStrategy(p,Q);
+  return {type:'econ', label:`${Math.min(p,Q)} × ${Math.max(p,Q)}`, unit:'บาท', answer:TR,
+    ctx:`<span class="tag">TR = P × Q</span><p>ขาย${g[0]} ${g[1]}ละ <b>${P}</b> บาท ได้ <b>${Q}</b> ${g[1]}<br>รายรับรวม (TR: Total Revenue) กี่บาท?</p>`,
+    wrong(){ return {err:'fact', msg: P>=10 ? `แยกคิดทีละส่วน: ${P} × ${Q} คือ ${p} × ${Q} แล้วเติม 0 ข้างหลัง<div class="sub">${st.hint}</div>` : `ลองคิดแบบนี้: ${st.hint}`}; },
+    solution:`TR = P × Q = ${P} × ${Q} = <b>${TR}</b> บาท${P>=10?`<div class="sub">${p} × ${Q} = ${p*Q} แล้วเติม 0</div>`:''}`,
+    praise:`ถูกต้อง: TR = ${P} × ${Q} = ${TR} บาท`};
+}
+function econQ(){
+  const {g,P,Q,TR}=priceSet();
+  return {type:'econ', label:`${TR} ÷ ${P}`, unit:g[1], answer:Q,
+    ctx:`<span class="tag">Q = TR ÷ P</span><p>รายรับรวม (TR) <b>${TR}</b> บาท ขาย${g[0]} ${g[1]}ละ <b>${P}</b> บาท<br>ขายได้กี่${g[1]} (Q: Quantity)?</p>`,
+    wrong(ans){ const v=P*ans; return {err:'inverse', msg:`ลองตรวจคำตอบ: ${P} × ${ans} = ${v} ไม่ใช่ ${TR} คำตอบจึงต้อง<b>${v<TR?'มากกว่านี้':'น้อยกว่านี้'}</b><div class="sub">ถามตัวเองว่า ${P} × ? = ${TR}</div>`}; },
+    solution:`Q = TR ÷ P = ${TR} ÷ ${P} = <b>${Q}</b> ${g[1]}<div class="sub">เพราะ ${P} × ${Q} = ${TR}</div>`,
+    praise:`ถูกต้อง: ${P} × ${Q} = ${TR} ดังนั้น Q = ${Q} ${g[1]}`};
+}
+function econP(){
+  const {g,P,Q,TR}=priceSet();
+  return {type:'econ', label:`${TR} ÷ ${Q}`, unit:'บาท', answer:P,
+    ctx:`<span class="tag">P = TR ÷ Q</span><p>ขาย${g[0]}ได้ <b>${Q}</b> ${g[1]} รายรับรวม (TR) <b>${TR}</b> บาท<br>ราคา${g[1]}ละกี่บาท (P: Price)?</p>`,
+    wrong(ans){ const v=Q*ans; return {err:'inverse', msg:`ลองตรวจคำตอบ: ${Q} × ${ans} = ${v} ไม่ใช่ ${TR} คำตอบจึงต้อง<b>${v<TR?'มากกว่านี้':'น้อยกว่านี้'}</b><div class="sub">ถามตัวเองว่า ${Q} × ? = ${TR}</div>`}; },
+    solution:`P = TR ÷ Q = ${TR} ÷ ${Q} = <b>${P}</b> บาท<div class="sub">เพราะ ${Q} × ${P} = ${TR}</div>`,
+    praise:`ถูกต้อง: ${Q} × ${P} = ${TR} ดังนั้น P = ${P} บาท`};
+}
+function econTC(){
+  let FC,VC; do{ FC=rnd(100,399); VC=rnd(21,99); }while((FC%10)+(VC%10)<10);
+  const q = addQ(FC,VC,`<span class="tag">TC = FC + VC</span><p>ต้นทุนคงที่ (FC: Fixed Cost) <b>${FC}</b> บาท<br>ต้นทุนผันแปร (VC: Variable Cost) <b>${VC}</b> บาท<br>ต้นทุนรวม (TC: Total Cost) กี่บาท?</p>`,'econ');
+  q.unit='บาท'; q.praise=`ถูกต้อง: TC = ${FC} + ${VC} = ${FC+VC} บาท`; q.solution='TC = FC + VC = '+q.solution;
+  return q;
+}
+function econProfit(){
+  const {g,TR}=priceSet(4,true), TC=rnd(100,TR-20), pr=TR-TC;
+  return {type:'econ', label:`${TR} − ${TC}`, unit:'บาท', answer:pr,
+    ctx:`<span class="tag">กำไร = TR − TC</span><p>วันนี้ขาย${g[0]}ได้รายรับรวม (TR) <b>${TR}</b> บาท<br>ต้นทุนรวม (TC) <b>${TC}</b> บาท<br>กำไร (Profit) กี่บาท?</p>`,
+    wrong(ans){ return {err:'column', msg:`ลองตรวจย้อนกลับ: ${ans} + ${TC} = ${ans+TC} แต่ต้องได้ TR = ${TR}`}; },
+    solution:`กำไร = TR − TC = ${TR} − ${TC} = <b>${pr}</b> บาท<div class="sub">ตรวจ: ${pr} + ${TC} = ${TR}</div>`,
+    praise:`ถูกต้อง: ${TR} − ${TC} = ${pr} บาท (ตรวจได้: ${pr} + ${TC} = ${TR})`};
+}
+function checkPool(){
+  const mk=new Set(), mul=[]; while(mul.length<3){ const a=rnd(6,9), b=rnd(2,9), k=a+'x'+b; if(mk.has(k)) continue; mk.add(k); mul.push(mulQ(a,b)); }
+  const dk=new Set(), dv=[]; while(dv.length<3){ const d=rnd(6,9), q=rnd(2,9), k=d+'/'+q; if(dk.has(k)) continue; dk.add(k); dv.push(divQ(d,q)); }
+  const p1=genAdd('32'), p2=genAdd('22');
+  return shuffle([...mul, ...dv, addQ(p1.a,p1.b), addQ(p2.a,p2.b), econTR(), econQ()]);
+}
+
+/* ---------- quests ---------- */
+const QUESTS = [
+  {id:'A', letter:'A', icon:'🧾', title:'เช็กอินกะแรก', desc:'แบบทดสอบก่อนเรียน 10 ข้อ เพื่อดูจุดเริ่มต้น'},
+  {id:'B', letter:'B', icon:'🧩', title:'ครอบครัวตัวเลข', desc:'1 ภาพ เขียนได้ทั้งประโยคคูณและหาร'},
+  {id:'C', letter:'C', icon:'🧮', title:'สูตรคูณหลังเคาน์เตอร์', desc:'ฝึกแม่ 6–9 ข้อไหนพลาด ข้อนั้นจะกลับมาบ่อยขึ้น'},
+  {id:'D', letter:'D', icon:'🔁', title:'หารด้วยการคูณย้อนกลับ', desc:'42 ÷ 6 = ? คือคำถามเดียวกับ 6 × ? = 42'},
+  {id:'E', letter:'E', icon:'➕', title:'ตั้งหลัก ทดให้ครบ', desc:'บวกเลขหลายหลักทีละหลัก แล้วตรวจย้อนกลับ'},
+  {id:'F', letter:'F', icon:'☕', title:'บัญชีร้านวันนี้', desc:'คำนวณ TR, TC และกำไรจากยอดขายจริง'},
+  {id:'BAL', letter:'G', icon:'⚖️', title:'ตาชั่งสมการ', desc:'ทำอะไรกับข้างหนึ่ง ต้องทำแบบเดียวกันกับอีกข้าง ที่มาของการย้ายข้าง'},
+  {id:'EQ', letter:'H', icon:'🎯', title:'ย้ายข้างหาค่าตัวแปร', desc:'สมการ 1 ตัวแปร ตั้งแต่ x + 7 = 15 ไปจนถึงสมการอุปสงค์และอุปทาน'},
+  {id:'G', letter:'I', icon:'🏁', title:'ประเมินปิดกะ', desc:'แบบทดสอบหลังเรียน เทียบกับครั้งแรก'},
+  {id:'H', letter:'J', icon:'📮', title:'รายงานถึงรุ่นพี่', desc:'สรุปผลการฝึก คัดลอกส่งทางแชตได้'}
+];
+const ROUND_LEN = {C:10, D:8, E:6, F:8};
+function questStatus(id){
+  const pre = !!S.pre;
+  if(id==='A') return {locked:false, done:pre, text: pre ? `ทำแล้ว ได้ ${S.pre.c}/${S.pre.n} ข้อ` : 'เริ่มที่นี่'};
+  if(id==='H') return {locked:false, done:false, text:'เปิดดูได้ทุกเมื่อ'};
+  if(id==='G'){
+    return {locked:false, done:!!S.post, text: S.post ? `ทำแล้ว ได้ ${S.post.c}/${S.post.n} ข้อ` : 'พร้อมแล้ว'};
+  }
+  if(id==='BAL') return {locked:false, done:S.rounds.BAL>=1, text: S.rounds.BAL>=1 ? 'ผ่านแล้ว' : `แก้โจทย์ได้ ${S.balDone.length} จาก ${BAL_PUZ.length} ข้อ`};
+  if(id==='EQ'){
+    const n=S.rounds.EQ; return {locked:false, done:n>=1, text: n ? `ผ่านแล้ว ${n} รอบ` : 'พร้อมแล้ว'};
+  }
+  if(id==='B') return {locked:false, done:S.rounds.B>=1, text: S.rounds.B>=1 ? 'ผ่านแล้ว' : `ตอบถูก ${Math.min(S.ff,3)} จาก 3 ข้อเพื่อผ่าน`};
+  const n=S.rounds[id];
+  if(id==='C') return {locked:false, done:n>=1, text:`คล่องแล้ว ${masteredCount()}/32 ข้อ${n?` จากการฝึก ${n} รอบ`:''}`};
+  return {locked:false, done:n>=1, text: n ? `ผ่านแล้ว ${n} รอบ` : 'พร้อมแล้ว'};
+}
+
+/* ---------- UI helpers ---------- */
+let R = null;
+function h(html){ $('#app').innerHTML = html; window.scrollTo(0,0); }
+function toast(msg){
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(), 2800);
+}
+function renderHUD(){
+  const ri=rankIdx(S.coins);
+  $('#hudRank').textContent = `ตำแหน่ง Lv.${ri+1} ${RANKS[ri][1]}${S.name?` (${S.name})`:''}`;
+  $('#hudCoins').textContent = S.coins;
+  $('#hudStreak').textContent = S.streak;
+  $('#hudDays').textContent = S.days.length;
+}
+function applyTheme(){ if(S.theme) document.documentElement.setAttribute('data-theme', S.theme); else document.documentElement.removeAttribute('data-theme'); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function onEnter(el, fn){ el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); fn(); } }); }
+function setFb(id, kind, html){ const el=$(id); el.innerHTML = `<div class="fb ${kind}">${html}</div>`; }
+
+/* ---------- Map ---------- */
+function renderMap(){
+  R = null;
+  const ri=rankIdx(S.coins), cur=RANKS[ri], nxt=RANKS[ri+1];
+  const p = nxt ? Math.round((S.coins-cur[0])/(nxt[0]-cur[0])*100) : 100;
+  const cards = QUESTS.map(q=>{
+    const st=questStatus(q.id);
+    return `<button class="quest ${st.locked?'locked':''} ${st.done?'done':''}" data-q="${q.id}" ${st.locked?'aria-disabled="true"':''}>
+      <span class="qletter" aria-hidden="true">${q.letter}</span>
+      <span class="qbody"><span class="qtitle">${q.icon} ${q.title}</span><span class="qdesc">${q.desc}</span><span class="qstatus">${st.done?'✓ ':''}${st.text}</span></span></button>`;
+  }).join('');
+  h(`<section class="board">
+      <h1>สวัสดี ${S.name?esc(S.name):'พนักงานใหม่'} 👋</h1>
+      <p>คุณเพิ่งเริ่มงานที่ Marginal Café ทุกการคำนวณที่ถูกต้องคือรายได้เข้าร้าน สะสมเงินเพื่อเลื่อนตำแหน่งไปจนถึงนักเศรษฐศาสตร์ฝึกหัด</p>
+      <div class="board-formula">TR = P × Q &nbsp;↔&nbsp; Q = TR ÷ P</div>
+      <p class="sub">สูตรแรกของเศรษฐศาสตร์ใช้แค่คูณกับหาร ถ้าคล่องตรงนี้ บทต่อไปจะง่ายขึ้นมาก</p>
+      <div class="rankline">ตำแหน่ง Lv.${ri+1} ${cur[1]}${nxt?` อีก ฿${nxt[0]-S.coins} ถึง${nxt[1]}`:' ตำแหน่งสูงสุดแล้ว'}</div>
+      <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+      ${S.name?'':`<div class="namebox"><input id="nameIn" maxlength="20" placeholder="ชื่อเล่นของคุณ" aria-label="ชื่อเล่น"><button class="btn small" id="nameBtn">บันทึกชื่อ</button></div>`}
+    </section>
+    <h2>แผนที่ภารกิจ</h2>
+    <div class="quests">${cards}</div>
+    ${storageOK?'':'<p class="note">เบราว์เซอร์นี้บันทึกความคืบหน้าไม่ได้ ใช้งานได้ตามปกติ แต่ปิดหน้าแล้วข้อมูลจะหาย</p>'}`);
+  document.querySelectorAll('.quest').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.q, st=questStatus(id);
+    if(st.locked){ toast(st.text.replace('🔒 ','')); return; }
+    openQuest(id);
+  }));
+  const nb=$('#nameBtn');
+  if(nb){
+    const saveName=()=>{ const v=$('#nameIn').value.trim().slice(0,20); if(!v) return; S.name=v; save(); renderHUD(); renderMap(); };
+    nb.addEventListener('click', saveName); onEnter($('#nameIn'), saveName);
+  }
+}
+function openQuest(id){
+  if(id==='A'||id==='G') startCheck(id);
+  else if(id==='B') renderExplorer();
+  else if(id==='E') startColumn();
+  else if(id==='H') renderSummary();
+  else if(id==='BAL') renderBalance();
+  else if(id==='EQ') startEq();
+  else startPractice(id);
+}
+function topBar(title){
+  const pctDone = Math.round(R.i/R.total*100);
+  return `<div class="qtop"><button class="link" id="backBtn">กลับแผนที่</button><span class="qmeta">${title}, ข้อ ${R.i+1} จาก ${R.total}</span></div>
+  <div class="bar"><i style="width:${pctDone}%"></i></div>`;
+}
+
+/* ---------- Practice runner (C, D, F) + Check (A, G) ---------- */
+function startPractice(id){
+  R={quest:id, mode:'practice', total:ROUND_LEN[id], i:0, earned:0, first:0, rs:0, rsMax:0, roundErrs:{}, wrong:[], lastKey:null, queue:null};
+  if(id==='F') R.queue = shuffle([econTR(),econTR(),econQ(),econQ(),econP(),econTC(),econTC(),econProfit()]);
+  nextItem();
+}
+function startCheck(id){
+  R={quest:id, mode:'check', total:10, i:0, results:[], queue:checkPool()};
+  nextItem();
+}
+function makeItem(){
+  if(R.mode==='check' || R.quest==='F') return R.queue[R.i];
+  if(R.quest==='C'){ const [a,b]=pickFact(R.lastKey); R.lastKey=`${a}x${b}`; return mulQ(a,b); }
+  let d,q,k; do{ d=rnd(6,9); q=rnd(2,9); k=d+'/'+q; }while(k===R.lastKey); R.lastKey=k; return divQ(d,q);
+}
+function nextItem(){
+  if(R.i>=R.total){ return R.mode==='check' ? endCheck() : endRound(); }
+  R.cur=makeItem(); R.attempts=0; R.hintLv=0; R.final=false; R.tFirst=null;
+  renderQuestion();
+  R.t0=performance.now();
+}
+function factGridHTML(curKey){
+  let g='<div class="fgrid" role="table" aria-label="ตารางความคล่องสูตรคูณ"><span class="h"></span>'+FB.map(b=>`<span class="h">×${b}</span>`).join('');
+  FA.forEach(a=>{
+    g+=`<span class="h">${a}</span>`;
+    FB.forEach(b=>{
+      const k=`${a}x${b}`, f=S.facts[k], st=f?f.st:0;
+      const sym = st===2?'★':st===1?'◐':'·', lab = st===2?'คล่องแล้ว':st===1?'กำลังฝึก':'ยังไม่ฝึก';
+      g+=`<span class="fcell ${st===2?'m':st===1?'p':''} ${k===curKey?'cur':''}" title="${a} × ${b}: ${lab}" aria-label="${a} คูณ ${b} ${lab}">${sym}</span>`;
+    });
+  });
+  return g+`</div><div class="legend"><span>· ยังไม่ฝึก</span><span>◐ กำลังฝึก</span><span>★ คล่องแล้ว (ถูกและตอบได้ทันที 3 ครั้งติด)</span></div><p class="note">คล่องแล้ว ${masteredCount()} จาก 32 ข้อ</p>`;
+}
+function renderQuestion(){
+  const Q=R.cur, isCheck=R.mode==='check', q=QUESTS.find(x=>x.id===R.quest);
+  let board='';
+  if(Q.ctx) board+=`<div class="ctx">${Q.ctx}</div>`;
+  if(Q.expr) board+=`<div class="expr">${Q.expr} = <span class="qm">?</span></div>`;
+  if(Q.pair && !isCheck) board+=`<div class="pair">คือคำถามเดียวกับ ${Q.pair}</div>`;
+  board+=`<div class="answer-row"><input id="ans" class="ans-input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" aria-label="คำตอบ">${Q.unit?`<span class="unit">${Q.unit}</span>`:''}<button class="btn" id="submitBtn">${isCheck?'บันทึกคำตอบ':'ส่งคำตอบ'}</button></div><div class="warn" id="warn" aria-live="polite"></div>`;
+  h(`${topBar(q.icon+' '+q.title)}
+    ${isCheck?'<p class="note">ตอบตามที่คิดได้เลย ไม่ต้องรีบ ผลทั้งหมดจะแสดงตอนท้าย</p>':''}
+    <section class="board">${board}</section>
+    <div id="fb" aria-live="polite"></div>
+    ${Q.hints && !isCheck ? `<div class="hints"><button class="btn ghost small" id="hintBtn">💡 ขอคำใบ้ (0/${Q.hints.length})</button><div id="hintBox"></div></div>`:''}
+    ${R.quest==='C'?`<section class="panel"><h3>ตารางความคล่อง แม่ 6–9</h3><div id="gridWrap">${factGridHTML(Q.key)}</div></section>`:''}`);
+  $('#backBtn').addEventListener('click', renderMap);
+  $('#submitBtn').addEventListener('click', onSubmit);
+  onEnter($('#ans'), onSubmit);
+  const hb=$('#hintBtn');
+  if(hb) hb.addEventListener('click', ()=>{
+    if(R.hintLv>=Q.hints.length) return;
+    $('#hintBox').insertAdjacentHTML('beforeend', `<div class="hint">${Q.hints[R.hintLv]}</div>`);
+    R.hintLv++; hb.textContent=`💡 ขอคำใบ้ (${R.hintLv}/${Q.hints.length})`;
+    if(R.hintLv>=Q.hints.length) hb.disabled=true;
+  });
+  $('#ans').focus();
+}
+function onSubmit(){
+  if(R.final){ R.i++; return nextItem(); }
+  const inp=$('#ans'), p=parseNum(inp.value);
+  if(!p.ok){ $('#warn').textContent = p.empty ? 'พิมพ์คำตอบก่อน' : BAD_INPUT; inp.focus(); return; }
+  $('#warn').textContent='';
+  if(R.tFirst==null) R.tFirst = performance.now()-R.t0;
+  const Q=R.cur, ans=p.n, ok=ans===Q.answer, t=R.tFirst;
+  markDay();
+  if(R.mode==='check'){
+    R.results.push({label:Q.expr||Q.label, type:Q.type, ans, answer:Q.answer, ok, t, unit:Q.unit||''});
+    if(!ok){ const w=Q.wrong(ans); S.errs[w.err]++; miss(Q.label,'w'); }
+    save(); R.i++; return nextItem();
+  }
+  if(ok){
+    const firstOK = R.attempts===0;
+    if(firstOK){
+      record(Q.type,true,t); R.first++;
+      if(Q.key){ updateFact(Q.key,true,t); if(t>5000) miss(Q.label,'s'); }
+    }
+    const gain = firstOK?10:5; R.earned+=gain;
+    S.streak++; R.rs++; R.rsMax=Math.max(R.rsMax,R.rs); S.best=Math.max(S.best,S.streak);
+    addCoins(gain);
+    if(S.streak%5===0){ addCoins(10); R.earned+=10; toast(`ตอบถูกติดกัน ${S.streak} ข้อ ได้โบนัส ฿10 🔥`); }
+    setFb('#fb','ok', `${Q.praise} <span class="gain">+฿${gain}</span>`);
+    finalize();
+  } else {
+    S.streak=0; R.rs=0;
+    const w=Q.wrong(ans);
+    if(R.attempts===0){
+      record(Q.type,false,t); if(Q.key) updateFact(Q.key,false,t);
+      S.errs[w.err]++; R.roundErrs[w.err]=(R.roundErrs[w.err]||0)+1; miss(Q.label,'w');
+      if(!R.wrong.includes(Q.label)) R.wrong.push(Q.label);
+    }
+    R.attempts++;
+    if(R.attempts===1){
+      setFb('#fb','err', `${w.msg}<div class="sub">ลองอีกครั้งได้ 1 ครั้ง</div>`);
+      inp.value=''; inp.focus();
+    } else {
+      setFb('#fb','sol', `ยังไม่ถูก ไม่เป็นไร ดูวิธีทำทีละขั้น:<div class="solution">${Q.solution}</div>`);
+      finalize();
+    }
+  }
+  renderHUD(); save();
+}
+function finalize(){
+  R.final=true;
+  $('#ans').disabled=true;
+  const b=$('#submitBtn'); b.textContent = R.i+1>=R.total ? 'ดูผลรอบนี้' : 'ข้อต่อไป'; b.focus();
+  const hb=$('#hintBtn'); if(hb) hb.disabled=true;
+  if(R.quest==='C'){ const gw=$('#gridWrap'); if(gw) gw.innerHTML=factGridHTML(R.cur.key); }
+}
+function endRound(){
+  const id=R.quest; S.rounds[id]=(S.rounds[id]||0)+1;
+  addCoins(15); R.earned+=15; save();
+  const q=QUESTS.find(x=>x.id===id);
+  const errs=Object.entries(R.roundErrs).sort((a,b)=>b[1]-a[1]);
+  let focus = errs.length ? `เรื่องที่ควรระวังรอบหน้า: ${ERR_NAMES[errs[0][0]]}` : 'รอบนี้ไม่พลาดเลยสักข้อ';
+  if(id==='E' && !R.roundErrs.carry) focus += '<br>ทดถูกทุกข้อในรอบนี้';
+  if(id==='EQ' && !R.roundErrs.sign) focus += '<br>ย้ายข้างแล้วเปลี่ยนเครื่องหมายถูกทุกครั้ง';
+  h(`<section class="board">
+      <h1>${q.icon} จบรอบ ${q.title}</h1>
+      <div class="big">${R.first}/${R.total}</div><p>ข้อที่ตอบถูกตั้งแต่ครั้งแรก</p>
+      <p>ได้เงินเข้าร้าน <b style="color:var(--hit)">฿${R.earned}</b> (รวมโบนัสจบรอบ ฿15) ตอบถูกติดกันสูงสุด ${R.rsMax} ข้อ</p>
+      <p>${focus}</p>
+      ${R.wrong.length?`<p class="sub">ข้อที่พลาดในรอบนี้: ${R.wrong.join(', ')}</p>`:''}
+      <div class="row" style="margin-top:14px"><button class="btn" id="againBtn">ฝึกอีกรอบ</button><button class="btn ghost" id="mapBtn">กลับแผนที่</button></div>
+    </section>
+    ${id==='C'?`<section class="panel"><h3>ตารางความคล่อง แม่ 6–9</h3>${factGridHTML()}</section>`:''}`);
+  $('#againBtn').addEventListener('click', ()=>openQuest(id));
+  $('#mapBtn').addEventListener('click', renderMap);
+  $('#againBtn').focus();
+}
+function aggregate(results){
+  const by={}; let c=0, t=0;
+  results.forEach(r=>{ const b=by[r.type]||(by[r.type]={n:0,c:0,t:0}); b.n++; b.t+=r.t; if(r.ok){ b.c++; c++; } t+=r.t; });
+  return {n:results.length, c, t:results.length?t/results.length:0, by, date:today()};
+}
+function endCheck(){
+  const out=aggregate(R.results), id=R.quest;
+  if(id==='A') S.pre=out; else S.post=out;
+  addCoins(20); save();
+  const rows=R.results.map((r,i)=>`<tr><td>${i+1}</td><td>${r.label}</td><td>${r.ans}</td><td>${r.answer}${r.unit?' '+r.unit:''}</td><td class="${r.ok?'yes':'no'}">${r.ok?'✓':'✗'}</td></tr>`).join('');
+  let compare='';
+  if(id==='G' && S.pre){
+    const d=S.post.c-S.pre.c;
+    compare=`<p>ครั้งแรกได้ ${S.pre.c}/${S.pre.n} ข้อ ครั้งนี้ได้ ${S.post.c}/${S.post.n} ข้อ${d>0?` ดีขึ้น ${d} ข้อ`:d===0?' เท่าเดิม':''}</p>
+      <p>เวลาเฉลี่ยต่อข้อ ${fmtT(S.pre.t)} → ${fmtT(S.post.t)}${S.post.t<S.pre.t?' คล่องขึ้นชัดเจน':''}</p>`;
+  }
+  h(`<section class="board">
+      <h1>${id==='A'?'🧾 เช็กอินเรียบร้อย':'🏁 ปิดกะเรียบร้อย'}</h1>
+      <div class="big">${out.c}/${out.n}</div><p>ข้อที่ตอบถูก ได้รับ ฿20 สำหรับการทำแบบทดสอบ</p>
+      ${compare}
+      ${id==='A'?'<p class="sub">แนะนำให้ไปต่อที่ภารกิจ B เพื่อดูว่าคูณกับหารเชื่อมกันอย่างไร</p>':''}
+      <div class="row" style="margin-top:14px"><button class="btn" id="mapBtn">กลับแผนที่</button><button class="btn ghost" id="sumBtn">ดูสรุปผล</button></div>
+    </section>
+    <section class="panel"><h3>คำตอบทั้งหมด</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>#</th><th>โจทย์</th><th>คุณตอบ</th><th>ที่ถูก</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>`);
+  $('#mapBtn').addEventListener('click', renderMap);
+  $('#sumBtn').addEventListener('click', renderSummary);
+}
+
+/* ---------- Column addition (E) ---------- */
+function startColumn(){
+  const kinds=shuffle(['22','22','32','32','33','33']);
+  R={quest:'E', mode:'col', total:6, i:0, earned:0, first:0, rs:0, rsMax:0, roundErrs:{}, wrong:[],
+     queue:kinds.map((k,idx)=>{ const p=genAdd(k); p.ctx=idx%2===0; return p; })};
+  nextColumn();
+}
+function nextColumn(){
+  if(R.i>=R.total) return endRound();
+  R.cur=R.queue[R.i]; R.attempts=0; R.stage='add'; R.tFirst=null;
+  renderColumn();
+  R.t0=performance.now();
+}
+const ansBox = i => document.querySelector(`.cbox.ans[data-i="${i}"]`);
+const carryBox = i => document.querySelector(`.cbox.carry[data-i="${i}"]`);
+function renderColumn(){
+  const {a,b}=R.cur, s=a+b, n=String(s).length, da=digitsOf(a), db=digitsOf(b);
+  R.cur.n=n;
+  const cols=[]; for(let i=n-1;i>=0;i--) cols.push(i);
+  let g='<div class="cg names"></div>'+cols.map(i=>`<div class="cg names">${NAMES[i]}</div>`).join('');
+  g+='<div class="cg crow"></div>'+cols.map(i=> i>0 ? `<div class="cg crow"><input class="cbox carry" data-i="${i}" inputmode="numeric" autocomplete="off" aria-label="ตัวทดของหลัก${NAMES[i]}"></div>` : '<div class="cg crow"></div>').join('');
+  g+='<div class="cg"></div>'+cols.map(i=>`<div class="cg">${i<da.length?da[i]:''}</div>`).join('');
+  g+='<div class="cg">+</div>'+cols.map(i=>`<div class="cg">${i<db.length?db[i]:''}</div>`).join('');
+  g+='<div class="cg rule"></div>';
+  g+='<div class="cg"></div>'+cols.map(i=>`<div class="cg"><input class="cbox ans" data-i="${i}" inputmode="numeric" autocomplete="off" aria-label="คำตอบหลัก${NAMES[i]}"></div>`).join('');
+  const ctx = R.cur.ctx ? `<div class="ctx"><span class="tag">TC = FC + VC</span><p>ต้นทุนคงที่ (FC) ${a} บาท + ต้นทุนผันแปร (VC) ${b} บาท = ต้นทุนรวม (TC) กี่บาท?</p></div>` : '';
+  h(`${topBar('➕ ตั้งหลัก ทดให้ครบ')}
+    <section class="board">${ctx}
+      <p class="colhelp">กรอกจากขวาไปซ้าย ช่องเส้นประด้านบนคือตัวทด ถ้าไม่มีทดใส่ 0 หรือข้ามไปก็ได้</p>
+      <div class="colwrap"><div class="colgrid" style="grid-template-columns:2rem repeat(${n},auto)">${g}</div></div>
+      <div id="colExtra"></div>
+      <div class="warn" id="warn" aria-live="polite"></div>
+      <div class="answer-row"><button class="btn" id="colBtn">ตรวจคำตอบ</button></div>
+    </section>
+    <div id="fb" aria-live="polite"></div>`);
+  $('#backBtn').addEventListener('click', renderMap);
+  $('#colBtn').addEventListener('click', colAction);
+  const flow=[]; for(let i=0;i<n;i++){ flow.push(ansBox(i)); if(i+1<n) flow.push(carryBox(i+1)); }
+  R.flow=flow;
+  flow.forEach((el,k)=>{
+    el.addEventListener('focus', ()=>el.select());
+    el.addEventListener('input', ()=>{
+      const v=normDigits(el.value).replace(/\s/g,'');
+      if(v===''){ el.value=''; return; }
+      const last=v.slice(-1);
+      if(!/\d/.test(last)){ el.value=''; $('#warn').textContent=BAD_INPUT; return; }
+      el.value=last; $('#warn').textContent='';
+      const nx=flow.slice(k+1).find(x=>!x.disabled);
+      if(nx) nx.focus();
+    });
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); colAction(); }
+      else if(e.key==='Backspace' && el.value===''){ const pv=flow.slice(0,k).reverse().find(x=>!x.disabled); if(pv){ e.preventDefault(); pv.focus(); } }
+    });
+  });
+  ansBox(0).focus();
+}
+function colAction(){
+  if(R.stage==='add') return colCheck();
+  if(R.stage==='inv') return colInverse();
+  R.i++; nextColumn();
+}
+function colCheck(){
+  const {a,b}=R.cur, s=a+b, n=R.cur.n, ed=digitsOf(s), da=digitsOf(a), db=digitsOf(b), cin=carriesOf(a,b);
+  const ans=[], car=[];
+  for(let i=0;i<n;i++){
+    const v=ansBox(i).value;
+    if(v===''){ $('#warn').textContent='กรอกคำตอบให้ครบทุกหลักก่อน (ช่องตัวทดเว้นว่างได้)'; ansBox(i).focus(); return; }
+    ans[i]=Number(v);
+    if(i>0){ const cv=carryBox(i).value; car[i]= cv===''?null:Number(cv); }
+  }
+  $('#warn').textContent='';
+  if(R.tFirst==null) R.tFirst=performance.now()-R.t0;
+  const t=R.tFirst; markDay();
+  const wrongCols=[]; for(let i=0;i<n;i++) if(ans[i]!==ed[i]) wrongCols.push(i);
+  for(let i=0;i<n;i++){ const bx=ansBox(i); bx.classList.toggle('bad', wrongCols.includes(i)); bx.classList.toggle('good', !wrongCols.includes(i)); }
+  if(!wrongCols.length){
+    const firstOK=R.attempts===0;
+    if(firstOK){ record('add',true,t); R.first++; }
+    const gain=firstOK?10:5; R.earned+=gain;
+    S.streak++; R.rs++; R.rsMax=Math.max(R.rsMax,R.rs); S.best=Math.max(S.best,S.streak);
+    addCoins(gain);
+    if(S.streak%5===0){ addCoins(10); R.earned+=10; toast(`ตอบถูกติดกัน ${S.streak} ข้อ ได้โบนัส ฿10 🔥`); }
+    let carryAll=true; for(let i=1;i<n;i++){ if(car[i]!==cin[i] && !(car[i]===null && cin[i]===0)) carryAll=false; }
+    R.flow.forEach(x=>x.disabled=true);
+    setFb('#fb','ok', `${carryAll?'ทดถูกทุกหลัก และ':''}บวกถูกทุกหลัก: ${a} + ${b} = ${s} <span class="gain">+฿${gain}</span>`);
+    R.stage='inv';
+    $('#colExtra').innerHTML=`<div class="inv"><p class="colhelp">ตรวจด้วยการย้อนกลับ ถ้าคำตอบถูก ผลลบต้องได้ ${a}</p>
+      <div class="expr sm">${s} − ${b} = <span class="qm">?</span></div>
+      <div class="answer-row"><input id="invAns" class="ans-input" inputmode="numeric" autocomplete="off" aria-label="ผลลบสำหรับตรวจย้อนกลับ"></div></div>`;
+    $('#colBtn').textContent='ตรวจย้อนกลับ';
+    onEnter($('#invAns'), colAction);
+    $('#invAns').focus();
+  } else {
+    S.streak=0; R.rs=0;
+    const i0=wrongCols[0], hasX=i0<da.length, hasY=i0<db.length, c=cin[i0];
+    const base=(hasX?da[i0]:0)+(hasY?db[i0]:0), parts=colParts(a,b,i0), nm=NAMES[i0], prev=NAMES[i0-1];
+    let err, msg;
+    if(!hasX && !hasY){ err='carry'; msg=`หลัก${nm}มีแค่ตัวทดที่มาจากหลัก${prev} เขียนตัวทดลงมาได้เลย`; }
+    else if(c===1 && (ans[i0]===base%10 || car[i0]===0)){ err='carry'; msg=`หลัก${nm}: ${parts} แล้วอย่าลืมบวก<b>ตัวทด</b>ที่มาจากหลัก${prev}`; }
+    else if(c===0 && i0>0 && ans[i0]===(base+1)%10){ err='carry'; msg=`หลัก${nm}: หลัก${prev}ไม่มีตัวทดส่งมา ลองบวก ${parts} ใหม่`; }
+    else { err='column'; msg=`หลัก${nm}: ลองบวก ${parts} ใหม่อีกครั้ง (รวมตัวทดถ้ามี)`; }
+    if(R.attempts===0){
+      record('add',false,t); S.errs[err]++; R.roundErrs[err]=(R.roundErrs[err]||0)+1;
+      miss(`${a} + ${b}`,'w'); R.wrong.push(`${a} + ${b}`);
+    }
+    R.attempts++;
+    if(R.attempts===1){
+      setFb('#fb','err', `${msg}<div class="sub">หลักที่มีกรอบสีชมพูยังไม่ถูก ลองแก้อีกครั้งได้ 1 ครั้ง</div>`);
+      wrongCols.forEach(i=>{ ansBox(i).value=''; });
+      const cb=carryBox(i0);
+      if(cb && c===1 && car[i0]!==1){ cb.value=''; cb.classList.add('bad'); cb.focus(); }
+      else ansBox(i0).focus();
+    } else {
+      for(let i=0;i<n;i++){ const bx=ansBox(i); bx.value=ed[i]; bx.classList.remove('bad','good'); bx.classList.add('sol'); }
+      for(let i=1;i<n;i++){ const cb=carryBox(i); cb.value=cin[i]?'1':''; cb.classList.remove('bad'); cb.classList.add('sol'); }
+      R.flow.forEach(x=>x.disabled=true);
+      setFb('#fb','sol', `ยังไม่ถูก ไม่เป็นไร ดูวิธีทำทีละหลัก:<div class="solution">${addSteps(a,b)}</div>`);
+      R.stage='done';
+      $('#colBtn').textContent = R.i+1>=R.total ? 'ดูผลรอบนี้' : 'ข้อต่อไป';
+      $('#colBtn').focus();
+    }
+  }
+  renderHUD(); save();
+}
+function colInverse(){
+  const {a,b}=R.cur, s=a+b, inp=$('#invAns'), p=parseNum(inp.value);
+  if(!p.ok){ $('#warn').textContent = p.empty?'พิมพ์ผลลบก่อน':BAD_INPUT; inp.focus(); return; }
+  $('#warn').textContent='';
+  inp.disabled=true;
+  if(p.n===a){ addCoins(5); R.earned+=5; setFb('#fb','ok', `ตรวจย้อนกลับผ่าน: ${s} − ${b} = ${a} ตรงกับตัวตั้ง คำตอบถูกแน่นอน <span class="gain">+฿5</span>`); }
+  else setFb('#fb','sol', `${s} − ${b} = <b>${a}</b> ซึ่งตรงกับตัวตั้ง การตรวจแบบนี้ช่วยจับข้อผิดพลาดก่อนส่งงานได้`);
+  R.stage='done';
+  const btn=$('#colBtn'); btn.textContent = R.i+1>=R.total ? 'ดูผลรอบนี้' : 'ข้อต่อไป'; btn.focus();
+  save();
+}
+
+/* ---------- Explorer (B) ---------- */
+const EX={a:6, b:7, q:null};
+function stepper(k,label,val){ return `<div class="stepper"><span>${label}</span><button class="sbtn" data-k="${k}" data-d="-1" aria-label="ลด${label}">−</button><b>${val}</b><button class="sbtn" data-k="${k}" data-d="1" aria-label="เพิ่ม${label}">+</button></div>`; }
+function renderExplorer(){
+  R=null;
+  const {a,b}=EX, c=a*b;
+  let dots=''; for(let r=0;r<a;r++) for(let k=0;k<b;k++) dots+=`<i class="${r%2?'alt':''}"></i>`;
+  h(`<div class="qtop"><button class="link" id="backBtn">กลับแผนที่</button><span class="qmeta">🧩 ครอบครัวตัวเลข</span></div>
+    <section class="panel">
+      <h2>คูณกับหาร คือเรื่องเดียวกัน</h2>
+      <p class="muted">เปลี่ยนตัวเลข แล้วดูว่าจุดชุดเดียวเขียนเป็นประโยคได้ 4 แบบ</p>
+      <div class="steppers">${stepper('a','จำนวนแถว',a)}${stepper('b','แถวละ',b)}</div>
+      <div class="dots" style="grid-template-columns:repeat(${b},14px)" role="img" aria-label="${a} แถว แถวละ ${b} จุด รวม ${c} จุด">${dots}</div>
+      <p class="center muted">${a} แถว แถวละ ${b} จุด รวม ${c} จุด</p>
+      <div class="family"><div>${a} × ${b} = ${c}</div><div>${b} × ${a} = ${c}</div><div>${c} ÷ ${a} = ${b}</div><div>${c} ÷ ${b} = ${a}</div></div>
+      <div class="ctx"><span class="tag">TR = P × Q ↔ P = TR ÷ Q</span>
+        <p>ซื้อสมุด ${b} เล่ม เล่มละ ${a} บาท จ่าย ${a} × ${b} = ${c} บาท<br>จ่าย ${c} บาท ได้สมุด ${b} เล่ม ราคาเล่มละ ${c} ÷ ${b} = ${a} บาท</p></div>
+    </section>
+    <section class="panel" id="mini"></section>`);
+  $('#backBtn').addEventListener('click', renderMap);
+  document.querySelectorAll('.sbtn').forEach(btn=>btn.addEventListener('click',()=>{
+    const k=btn.dataset.k, d=Number(btn.dataset.d), lo=k==='a'?6:2;
+    EX[k]=Math.min(9,Math.max(lo,EX[k]+d)); renderExplorer();
+  }));
+  renderMini();
+}
+function newMini(){ const x=rnd(6,9), y=rnd(2,9), byX=Math.random()<.5; EX.q={x,y,p:x*y,div:byX?x:y,ans:byX?y:x,done:false}; }
+function renderMini(){
+  if(!EX.q || EX.q.done) newMini();
+  const q=EX.q, passed=S.rounds.B>=1;
+  $('#mini').innerHTML=`<h3>ทดสอบตัวเอง ${passed?'<span class="pill ok">ผ่านแล้ว</span>':`<span class="pill">${Math.min(S.ff,3)}/3</span>`}</h3>
+    <p>ถ้ารู้ว่า <b>${q.x} × ${q.y} = ${q.p}</b></p>
+    <div class="expr sm">${q.p} ÷ ${q.div} = <span class="qm">?</span></div>
+    <div class="answer-row"><input id="mAns" class="ans-input" inputmode="numeric" autocomplete="off" aria-label="คำตอบ"><button class="btn" id="mBtn">ตอบ</button></div>
+    <div class="warn" id="mWarn" aria-live="polite"></div><div id="mFb" aria-live="polite"></div>`;
+  const go=()=>{
+    if(q.done){ renderMini(); $('#mAns').focus(); return; }
+    const p=parseNum($('#mAns').value);
+    if(!p.ok){ $('#mWarn').textContent=p.empty?'พิมพ์คำตอบก่อน':BAD_INPUT; return; }
+    $('#mWarn').textContent=''; q.done=true; $('#mAns').disabled=true; markDay();
+    if(p.n===q.ans){
+      S.ff++; addCoins(10);
+      setFb('#mFb','ok', `ถูกต้อง: ${q.div} × ${q.ans} = ${q.p} ดังนั้น ${q.p} ÷ ${q.div} = ${q.ans} <span class="gain">+฿10</span>`);
+      if(S.ff>=3 && !S.rounds.B){ S.rounds.B=1; toast('ผ่านภารกิจครอบครัวตัวเลขแล้ว'); }
+    } else {
+      S.errs.inverse++; miss(`${q.p} ÷ ${q.div}`,'w');
+      setFb('#mFb','sol', `ประโยคคูณบอกคำตอบไว้แล้ว: ${q.div} × <b>${q.ans}</b> = ${q.p} ดังนั้น ${q.p} ÷ ${q.div} = <b>${q.ans}</b>`);
+    }
+    $('#mBtn').textContent='ข้อใหม่'; $('#mBtn').focus(); save();
+  };
+  $('#mBtn').addEventListener('click', go);
+  onEnter($('#mAns'), go);
+}
+
+/* ---------- Equations: shared helpers ---------- */
+function signed(b){ return b>0 ? `+${b}` : `−${-b}`; }
+function lhsText(s,v){ v=v||'x'; let L = s.a>1 ? `${s.a}${v}` : (s.d>1 ? `${v} ÷ ${s.d}` : v); if(s.b>0) L+=` + ${s.b}`; else if(s.b<0) L+=` − ${-s.b}`; return L; }
+function eqText(s,v){ return `${lhsText(s,v)} = ${s.r}`; }
+function substText(s,x){ let L = s.a>1 ? `${s.a} × ${x}` : (s.d>1 ? `${x} ÷ ${s.d}` : `${x}`); if(s.b>0) L+=` + ${s.b}`; else if(s.b<0) L+=` − ${-s.b}`; return `${L} = ${s.r}`; }
+
+/* ---------- Balance explorer ---------- */
+const BAL_PUZ=[{a:1,d:1,b:7,r:15},{a:1,d:1,b:-4,r:9},{a:6,d:1,b:0,r:42},{a:1,d:3,b:0,r:8},{a:3,d:1,b:5,r:20},{a:7,d:1,b:-6,r:50}];
+const BX={idx:0, s:null, log:[], msg:''};
+function balReset(){ BX.s=Object.assign({}, BAL_PUZ[BX.idx]); BX.log=[]; BX.msg=''; }
+const isSolved = s => s.a===1 && s.d===1 && s.b===0;
+function balOptions(s){
+  const o=[];
+  if(s.b){ const k=Math.abs(s.b); o.push({k:'const', lab: s.b>0?`ลบ ${k} ทั้งสองข้าง`:`บวก ${k} ทั้งสองข้าง`}, {k:'constWrong', lab: s.b>0?`บวก ${k} ทั้งสองข้าง`:`ลบ ${k} ทั้งสองข้าง`}); }
+  if(s.a>1) o.push({k:'div', lab:`หาร ${s.a} ทั้งสองข้าง`}, {k:'divWrong', lab:`คูณ ${s.a} ทั้งสองข้าง`});
+  if(s.d>1) o.push({k:'mul', lab:`คูณ ${s.d} ทั้งสองข้าง`}, {k:'mulWrong', lab:`หาร ${s.d} ทั้งสองข้าง`});
+  return shuffle(o);
+}
+function renderBalance(){
+  R=null;
+  if(!BX.s) balReset();
+  const s=BX.s, o=BAL_PUZ[BX.idx], done=isSolved(s);
+  const logs=BX.log.map(l=>`<div class="logrow"><div>ทำเหมือนกันทั้งสองข้าง: ${l.both}</div><div class="short">ทางลัด: ${l.short}</div><div class="res">ได้ ${l.res}</div></div>`).join('');
+  h(`<div class="qtop"><button class="link" id="backBtn">กลับแผนที่</button><span class="qmeta">⚖️ ตาชั่งสมการ, ข้อ ${BX.idx+1} จาก ${BAL_PUZ.length}</span></div>
+    <section class="board">
+      <p>สมการคือตาชั่งที่สมดุล ทำอะไรกับข้างหนึ่ง ต้องทำแบบเดียวกันกับอีกข้าง เป้าหมายคือทำให้ x เหลือตัวเดียว</p>
+      <div class="scale" aria-label="สมการปัจจุบัน ${eqText(s)}"><div class="pan">${lhsText(s)}</div><div class="eqs">=</div><div class="pan">${s.r}</div></div>
+      <div class="beam" aria-hidden="true"></div>
+      ${done ? `<div class="solved">x = ${s.r}</div><p class="center">ตรวจโดยแทนค่าในสมการเดิม: ${substText(o,s.r)} ✓</p>`
+             : `<p class="center">เลือกสิ่งที่จะทำกับทั้งสองข้าง</p><div class="opts">${balOptions(s).map(x=>`<button class="opt" data-k="${x.k}">${x.lab}</button>`).join('')}</div>`}
+      <div class="row" style="margin-top:14px;justify-content:center">
+        ${BX.log.length||BX.msg?'<button class="btn ghost small" id="balRestart">เริ่มข้อนี้ใหม่</button>':''}
+        ${done||S.balDone.includes(BX.idx)?`<button class="btn small" id="balNext">${BX.idx+1<BAL_PUZ.length?'โจทย์ถัดไป':'เริ่มข้อแรกอีกครั้ง'}</button>`:''}
+      </div>
+    </section>
+    <div id="fb" aria-live="polite">${BX.msg?`<div class="fb sol">${BX.msg}</div>`:''}</div>
+    ${logs?`<section class="panel"><h3>ขั้นตอนที่ทำ</h3>${logs}</section>`:''}
+    <section class="panel"><h3>ทางลัด “ย้ายข้างเปลี่ยนเครื่องหมาย”</h3>
+      <p class="muted">คือการทำเหมือนกันทั้งสองข้างแบบย่อ ตัวที่ย้ายข้าม = จะกลายเป็นการกระทำที่ตรงข้าม</p>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>ข้างหนึ่งมี</th><th>ย้ายไปอีกข้างกลายเป็น</th></tr></thead>
+      <tbody><tr><td>+ 5</td><td>− 5</td></tr><tr><td>− 5</td><td>+ 5</td></tr><tr><td>× 3</td><td>÷ 3</td></tr><tr><td>÷ 3</td><td>× 3</td></tr></tbody></table></div>
+      <p class="muted" style="margin-top:8px">ถ้ามีทั้งบวก/ลบ และคูณ ให้ย้ายตัวที่บวกหรือลบก่อน แล้วค่อยจัดการตัวที่คูณหรือหาร</p></section>`);
+  $('#backBtn').addEventListener('click', renderMap);
+  document.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>balApply(b.dataset.k)));
+  const rs=$('#balRestart'); if(rs) rs.addEventListener('click',()=>{ balReset(); renderBalance(); });
+  const nx=$('#balNext'); if(nx) nx.addEventListener('click',()=>{ BX.idx=(BX.idx+1)%BAL_PUZ.length; balReset(); renderBalance(); });
+}
+function balApply(kind){
+  const s=BX.s, L=lhsText(s), k=Math.abs(s.b);
+  BX.msg='';
+  if(kind==='const'){
+    const op=s.b>0?'−':'+', ns=Object.assign({},s,{b:0,r:s.r-s.b});
+    BX.log.push({both:`${L} ${op} ${k} = ${s.r} ${op} ${k}`, short:`ย้าย ${signed(s.b)} ข้าม = กลายเป็น ${signed(-s.b)}`, res:eqText(ns)});
+    BX.s=ns;
+  } else if(kind==='div'){
+    if(s.b){ BX.msg=`ทำได้และยังสมดุล แต่จะได้ x ${s.b>0?'+':'−'} ${k}/${s.a} = ${s.r}/${s.a} ซึ่งเป็นเศษส่วน ย้ายตัวที่บวกหรือลบออกก่อนจะง่ายกว่า`; }
+    else { const ns=Object.assign({},s,{a:1,r:s.r/s.a}); BX.log.push({both:`${L} ÷ ${s.a} = ${s.r} ÷ ${s.a}`, short:`ย้าย ×${s.a} ข้าม = กลายเป็น ÷${s.a}`, res:eqText(ns)}); BX.s=ns; }
+  } else if(kind==='mul'){
+    const ns=Object.assign({},s,{d:1,r:s.r*s.d});
+    BX.log.push({both:`${L} × ${s.d} = ${s.r} × ${s.d}`, short:`ย้าย ÷${s.d} ข้าม = กลายเป็น ×${s.d}`, res:eqText(ns)}); BX.s=ns;
+  } else if(kind==='constWrong'){
+    const op=s.b>0?'+':'−', ns=Object.assign({},s,{b:s.b*2,r:s.r+s.b});
+    BX.msg=`ยังสมดุลอยู่: ${L} ${op} ${k} = ${s.r} ${op} ${k} ได้ ${eqText(ns)} แต่ตัวเลขที่ติดกับ x ยิ่งมากขึ้น ต้องทำ<b>ตรงข้าม</b>กับสิ่งที่ติดอยู่`;
+  } else if(kind==='divWrong'){
+    const ns={a:s.a*s.a,d:1,b:s.b*s.a,r:s.r*s.a};
+    BX.msg=`ยังสมดุลอยู่: คูณ ${s.a} ทั้งสองข้างได้ ${eqText(ns)} แต่ตัวที่คูณ x ใหญ่ขึ้น ต้องใช้<b>การหาร</b> ซึ่งตรงข้ามกับการคูณ`;
+  } else if(kind==='mulWrong'){
+    BX.msg=`ยังสมดุลอยู่: ได้ x ÷ ${s.d*s.d} = ${s.r} ÷ ${s.d} แต่ x ยิ่งถูกหารมากขึ้น ต้องใช้<b>การคูณ</b> ซึ่งตรงข้ามกับการหาร`;
+  }
+  if(isSolved(BX.s) && !S.balDone.includes(BX.idx)){
+    S.balDone.push(BX.idx); addCoins(10); markDay(); toast('แก้สมการได้ +฿10');
+    if(S.balDone.length>=BAL_PUZ.length && !S.rounds.BAL){ S.rounds.BAL=1; toast('ผ่านภารกิจตาชั่งสมการแล้ว'); }
+    save();
+  }
+  renderBalance();
+}
+
+/* ---------- Equation practice (EQ) ---------- */
+function stepConst(s,v){
+  const lhs=lhsText({a:s.a,d:s.d,b:0},v), ans=s.r-s.b, term=signed(s.b), flip=signed(-s.b), op=s.b>0?'−':'+', k=Math.abs(s.b);
+  return {prompt:`ย้าย ${term} ข้าม = ไปอีกฝั่ง`, lhs, answer:ans, show:`${lhs} = ${s.r} ${op} ${k} = ${ans}`,
+    wrong(x){
+      if(x===s.r+s.b) return {err:'sign', msg:`${term} ย้ายข้าม = แล้วต้องกลายเป็น ${flip} ลองคิด ${s.r} ${op} ${k} = ?`};
+      return {err:'column', msg:`${term} ย้ายไปอีกฝั่งกลายเป็น ${flip} ลองคำนวณ ${s.r} ${op} ${k} ใหม่อีกครั้ง`};
+    }};
+}
+function stepCoef(a,r,v){
+  const ans=r/a;
+  return {prompt:`ย้าย ×${a} (ตัวที่คูณ ${v} อยู่) ข้าม = ไปอีกฝั่ง`, lhs:v, answer:ans, show:`${v} = ${r} ÷ ${a} = ${ans}`,
+    wrong(x){
+      if(x===r*a) return {err:'sign', msg:`×${a} ย้ายข้าม = แล้วต้องกลายเป็น ÷${a} ลองคิด ${r} ÷ ${a} = ?`};
+      if(x===r-a || x===r+a) return {err:'sign', msg:`${a} คูณกับ ${v} อยู่ ย้ายไปต้องกลายเป็นการหาร (÷${a}) ไม่ใช่บวกหรือลบ`};
+      return {err:'inverse', msg:`ลองตรวจ: ${a} × ${x} = ${a*x} ไม่ใช่ ${r} ถามตัวเองว่า ${a} × ? = ${r}`};
+    }};
+}
+function stepDivisor(d,r,v){
+  const ans=r*d;
+  return {prompt:`ย้าย ÷${d} ข้าม = ไปอีกฝั่ง`, lhs:v, answer:ans, show:`${v} = ${r} × ${d} = ${ans}`,
+    wrong(x){
+      if(x*d===r || x===r-d || x===r+d) return {err:'sign', msg:`÷${d} ย้ายข้าม = แล้วต้องกลายเป็น ×${d} ลองคิด ${r} × ${d} = ?`};
+      return {err:'fact', msg:`ทิศทางถูกแล้ว ลองคิด ${r} × ${d} อีกครั้ง`};
+    }};
+}
+function eqItem(s,v){
+  v=v||'x'; const steps=[]; let r=s.r;
+  if(s.b){ steps.push(stepConst(s,v)); r=s.r-s.b; }
+  if(s.a>1) steps.push(stepCoef(s.a,r,v));
+  if(s.d>1) steps.push(stepDivisor(s.d,r,v));
+  const x=steps[steps.length-1].answer;
+  return {type:'eq', label:eqText(s,v), eq:eqText(s,v), ctx:null, v, steps, answer:x, check:substText(s,x)};
+}
+function genEq(level){
+  let a=1,d=1,b=0,x;
+  if(level===1){ x=rnd(3,40); b=rnd(2,30); }
+  else if(level===2){ x=rnd(12,60); b=-rnd(2,Math.min(30,x-2)); }
+  else if(level===3){ a=rnd(6,9); x=rnd(2,9); }
+  else if(level===4){ d=rnd(2,9); x=d*rnd(2,9); }
+  else if(level===5){ a=rnd(2,9); x=rnd(2,9); b=rnd(2,20); }
+  else { a=rnd(2,9); x=rnd(2,12); b=-rnd(2,Math.min(20,a*x-2)); }
+  const r=(d>1? x/d : a*x)+b;
+  return eqItem({a,d,b,r});
+}
+function econDemandEq(){
+  const b=rnd(2,5), P=rnd(10,25), Q=rnd(4,16)*5, A=Q+b*P, g=pick(GOODS_T);
+  const s1={prompt:`ย้าย −${b}P ไปฝั่งซ้าย (กลายเป็น +${b}P) และย้าย ${Q} ไปฝั่งขวา (กลายเป็น −${Q})`, lhs:`${b}P`, answer:A-Q, show:`${b}P = ${A} − ${Q} = ${A-Q}`,
+    wrong(x){ if(x===A+Q) return {err:'sign', msg:`${Q} ย้ายข้าม = แล้วต้องกลายเป็น −${Q} ลองคิด ${A} − ${Q} = ?`}; return {err:'column', msg:`ลองคิด ${A} − ${Q} ใหม่อีกครั้ง`}; }};
+  return {type:'eq', label:`${Q} = ${A} − ${b}P`, eq:`${Q} = ${A} − ${b}P`, v:'P',
+    ctx:`<span class="tag">อุปสงค์ (Demand): Qd = ${A} − ${b}P</span><p>ถ้าอยากให้ลูกค้าซื้อ${g[0]} <b>${Q}</b> ${g[1]} ต้องตั้งราคา (P) ${g[1]}ละกี่บาท?</p>`,
+    steps:[s1, stepCoef(b,A-Q,'P')], answer:P, check:`${A} − ${b} × ${P} = ${Q}`};
+}
+function econSupplyEq(){
+  let b,P,c,Q; do{ b=rnd(2,5); P=rnd(10,25); c=rnd(1,6)*5; Q=b*P-c; }while(Q<10);
+  const g=pick(GOODS_T);
+  const s1={prompt:`ย้าย −${c} ไปฝั่งซ้าย (กลายเป็น +${c})`, lhs:`${b}P`, answer:Q+c, show:`${b}P = ${Q} + ${c} = ${Q+c}`,
+    wrong(x){ if(x===Q-c) return {err:'sign', msg:`−${c} ย้ายข้าม = แล้วต้องกลายเป็น +${c} ลองคิด ${Q} + ${c} = ?`}; return {err:'column', msg:`ลองคิด ${Q} + ${c} ใหม่อีกครั้ง`}; }};
+  return {type:'eq', label:`${Q} = ${b}P − ${c}`, eq:`${Q} = ${b}P − ${c}`, v:'P',
+    ctx:`<span class="tag">อุปทาน (Supply): Qs = ${b}P − ${c}</span><p>ถ้าร้านอยากผลิต${g[0]}ออกขาย <b>${Q}</b> ${g[1]} ราคา (P) ต้องเป็น${g[1]}ละกี่บาท?</p>`,
+    steps:[s1, stepCoef(b,Q+c,'P')], answer:P, check:`${b} × ${P} − ${c} = ${Q}`};
+}
+function eqRound(){ return [genEq(1),genEq(2),genEq(3),genEq(4),genEq(5),genEq(6),pick([econDemandEq,econSupplyEq])(),genEq(pick([5,6]))]; }
+function startEq(){
+  R={quest:'EQ', mode:'eq', total:8, i:0, earned:0, first:0, rs:0, rsMax:0, roundErrs:{}, wrong:[], queue:eqRound()};
+  nextEq();
+}
+function nextEq(){
+  if(R.i>=R.total) return endRound();
+  R.cur=R.queue[R.i]; R.si=0; R.attempts=0; R.clean=true; R.done=false;
+  renderEq(); R.t0=performance.now();
+}
+function renderEq(){
+  const Q=R.cur;
+  h(`${topBar('🎯 ย้ายข้างหาค่าตัวแปร')}
+    <section class="board">${Q.ctx?`<div class="ctx">${Q.ctx}</div>`:''}
+      <div class="expr sm">${Q.eq}</div>
+      <p class="colhelp">หาค่า ${Q.v} ทีละขั้น</p>
+      <div class="work" id="work"></div>
+      <div id="stepArea"></div>
+      <div class="warn" id="warn" aria-live="polite"></div>
+      <div class="answer-row"><button class="btn" id="eqBtn">ส่งคำตอบ</button></div>
+    </section>
+    <div id="fb" aria-live="polite"></div>`);
+  $('#backBtn').addEventListener('click', renderMap);
+  $('#eqBtn').addEventListener('click', eqAction);
+  renderStep();
+}
+function renderStep(){
+  const st=R.cur.steps[R.si];
+  $('#stepArea').innerHTML=`<p class="stepq">ขั้นที่ ${R.si+1}: ${st.prompt}</p>
+    <div class="answer-row"><span class="lhs">${st.lhs} =</span><input id="ans" class="ans-input" inputmode="numeric" autocomplete="off" aria-label="${st.lhs} เท่ากับ"></div>`;
+  onEnter($('#ans'), eqAction);
+  $('#ans').focus();
+}
+function eqAction(){
+  if(R.done){ R.i++; return nextEq(); }
+  const inp=$('#ans'), p=parseNum(inp.value);
+  if(!p.ok){ $('#warn').textContent = p.empty?'พิมพ์คำตอบก่อน':BAD_INPUT; inp.focus(); return; }
+  $('#warn').textContent='';
+  const st=R.cur.steps[R.si]; markDay();
+  if(p.n===st.answer){
+    const g=R.attempts===0?5:2; addCoins(g); R.earned+=g;
+    $('#work').insertAdjacentHTML('beforeend', `<div class="wline ok">${st.show} ✓</div>`);
+    $('#fb').innerHTML='';
+    eqAdvance();
+  } else {
+    const w=st.wrong(p.n);
+    if(R.attempts===0){
+      S.errs[w.err]++; R.roundErrs[w.err]=(R.roundErrs[w.err]||0)+1;
+      if(R.clean){ miss(R.cur.label,'w'); R.wrong.push(R.cur.label); }
+      R.clean=false;
+    }
+    R.attempts++;
+    if(R.attempts===1){ setFb('#fb','err', `${w.msg}<div class="sub">ลองอีกครั้งได้ 1 ครั้ง</div>`); inp.value=''; inp.focus(); }
+    else {
+      $('#work').insertAdjacentHTML('beforeend', `<div class="wline sol">${st.show}</div>`);
+      setFb('#fb','sol', `ขั้นนี้ได้ ${st.show} ดูไว้แล้วทำขั้นต่อไปต่อได้เลย`);
+      eqAdvance();
+    }
+  }
+  renderHUD(); save();
+}
+function eqAdvance(){
+  R.si++; R.attempts=0;
+  if(R.si<R.cur.steps.length) return renderStep();
+  const Q=R.cur, t=performance.now()-R.t0;
+  R.done=true; record('eq', R.clean, t);
+  $('#stepArea').innerHTML=`<div class="solved">${Q.v} = ${Q.answer}</div>`;
+  if(R.clean){
+    R.first++; S.streak++; R.rs++; R.rsMax=Math.max(R.rsMax,R.rs); S.best=Math.max(S.best,S.streak);
+    addCoins(5); R.earned+=5;
+    if(S.streak%5===0){ addCoins(10); R.earned+=10; toast(`ตอบถูกติดกัน ${S.streak} ข้อ ได้โบนัส ฿10 🔥`); }
+    setFb('#fb','ok', `ถูกทุกขั้น ${Q.v} = ${Q.answer} <span class="gain">+฿5</span><div class="sub">ตรวจโดยแทนค่ากลับ: ${Q.check} ✓</div>`);
+  } else {
+    S.streak=0; R.rs=0;
+    setFb('#fb','sol', `ได้ ${Q.v} = ${Q.answer}<div class="sub">ตรวจโดยแทนค่ากลับ: ${Q.check} ✓</div>`);
+  }
+  const b=$('#eqBtn'); b.textContent = R.i+1>=R.total ? 'ดูผลรอบนี้' : 'ข้อต่อไป'; b.focus();
+  renderHUD(); save();
+}
+
+/* ---------- Summary (H) ---------- */
+function topMiss(){
+  return Object.entries(S.miss).map(([k,v])=>({k,w:v.w||0,s:v.s||0,score:(v.w||0)*2+(v.s||0)}))
+    .filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+}
+function checkLine(c){ return c ? `${c.c}/${c.n} ข้อ, เวลาเฉลี่ย ${fmtT(c.t)} ต่อข้อ (${c.date})` : 'ยังไม่ได้ทำ'; }
+function summaryText(){
+  const L=[];
+  L.push(`Math Quest: สรุปผลของ ${S.name||'(ไม่ระบุชื่อ)'}`);
+  L.push(`วันที่สรุป: ${today()}`);
+  L.push(`ตำแหน่ง: ${RANKS[rankIdx(S.coins)][1]} | ฿${S.coins} | ฝึกมาแล้ว ${S.days.length} วัน | ถูกติดกันสูงสุด ${S.best} ข้อ`);
+  L.push('');
+  L.push(`Pre-check: ${checkLine(S.pre)}`);
+  L.push(`Post-check: ${checkLine(S.post)}`);
+  L.push('');
+  L.push('ความแม่นยำจากการฝึก (ถูกตั้งแต่ครั้งแรก):');
+  ['mul','div','add','econ','eq'].forEach(k=>{ const s=S.stats[k]; L.push(`- ${TYPE_NAMES[k]}: ${pct(s.c,s.n)} จาก ${s.n} ข้อ${s.n?`, เฉลี่ย ${fmtT(s.t/s.n)} ต่อข้อ`:''}`); });
+  L.push('');
+  L.push(`สูตรคูณแม่ 6–9 ที่คล่องแล้ว: ${masteredCount()}/32`);
+  const tm=topMiss();
+  L.push('ข้อที่ต้องฝึกเพิ่ม: '+(tm.length?tm.map(x=>`${x.k} (ผิด ${x.w}${x.s?`, ช้า ${x.s}`:''})`).join(', '):'ยังไม่มี'));
+  L.push('ประเภทข้อผิด: '+Object.keys(ERR_NAMES).map(k=>`${ERR_NAMES[k]} ${S.errs[k]}`).join(' | '));
+  return L.join('\n');
+}
+function cmpCell(c,k){
+  if(!c) return '–';
+  if(!k) return `${c.c}/${c.n}, ${fmtT(c.t)}`;
+  const b=c.by[k]; if(!b||!b.n) return '–';
+  return `${b.c}/${b.n}, ${fmtT(b.t/b.n)}`;
+}
+function renderSummary(){
+  R=null;
+  const tm=topMiss(), txt=summaryText();
+  const prac=['mul','div','add','econ','eq'].map(k=>{ const s=S.stats[k]; return `<tr><td>${TYPE_NAMES[k]}</td><td>${s.n}</td><td>${pct(s.c,s.n)}</td><td>${s.n?fmtT(s.t/s.n):'–'}</td></tr>`; }).join('');
+  const cmp=[['ทั้งหมด',null],['การคูณ','mul'],['การหาร','div'],['การบวก','add'],['โจทย์เศรษฐศาสตร์','econ']]
+    .map(([l,k])=>`<tr><td>${l}</td><td>${cmpCell(S.pre,k)}</td><td>${cmpCell(S.post,k)}</td></tr>`).join('');
+  h(`<div class="qtop"><button class="link" id="backBtn">กลับแผนที่</button><span class="qmeta">📮 รายงานถึงรุ่นพี่</span></div>
+    <section class="board">
+      <h1>รายงานของ ${S.name?esc(S.name):'พนักงานใหม่'}</h1>
+      <p>ตำแหน่ง ${RANKS[rankIdx(S.coins)][1]} มีเงินร้าน ฿${S.coins} ฝึกมาแล้ว ${S.days.length} วัน ตอบถูกติดกันสูงสุด ${S.best} ข้อ</p>
+      <div class="row" style="margin-top:12px"><button class="btn" id="copyBtn">คัดลอกสรุปส่งรุ่นพี่</button></div>
+    </section>
+    <section class="panel"><h3>ก่อนเรียน เทียบกับหลังเรียน</h3><p class="muted">จำนวนข้อที่ถูก และเวลาเฉลี่ยต่อข้อ</p>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>เรื่อง</th><th>ก่อน (A)</th><th>หลัง (I)</th></tr></thead><tbody>${cmp}</tbody></table></div></section>
+    <section class="panel"><h3>ผลจากการฝึก</h3>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>เรื่อง</th><th>ข้อ</th><th>ถูกครั้งแรก</th><th>เวลาเฉลี่ย</th></tr></thead><tbody>${prac}</tbody></table></div></section>
+    <section class="panel"><h3>สูตรคูณแม่ 6–9</h3>${factGridHTML()}</section>
+    <section class="panel"><h3>ข้อที่ต้องฝึกเพิ่ม</h3>
+      ${tm.length?`<div class="tblwrap"><table class="tbl"><thead><tr><th>โจทย์</th><th>ผิด</th><th>ตอบช้า</th></tr></thead><tbody>${tm.map(x=>`<tr><td>${x.k}</td><td>${x.w}</td><td>${x.s}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">ยังไม่มีข้อที่พลาดซ้ำ</p>'}
+      <h3 style="margin-top:14px">ประเภทข้อผิดพลาด</h3>
+      <div class="tblwrap"><table class="tbl"><tbody>${Object.keys(ERR_NAMES).map(k=>`<tr><td>${ERR_NAMES[k]}</td><td>${S.errs[k]} ครั้ง</td></tr>`).join('')}</tbody></table></div></section>
+    <section class="panel"><h3>ข้อความที่จะคัดลอก</h3><textarea class="copyarea" id="copyArea" readonly>${esc(txt)}</textarea></section>
+    <section class="panel"><h3>เริ่มใหม่ทั้งหมด</h3><p class="muted">ลบความคืบหน้า เงิน และผลทดสอบทั้งหมดในเครื่องนี้</p>
+      <button class="btn ghost small" id="resetBtn">ลบความคืบหน้า</button></section>`);
+  $('#backBtn').addEventListener('click', renderMap);
+  $('#copyBtn').addEventListener('click', async ()=>{
+    let ok=false;
+    try{ await navigator.clipboard.writeText(txt); ok=true; }catch(e){}
+    if(!ok){ try{ const ta=$('#copyArea'); ta.focus(); ta.select(); ok=document.execCommand('copy'); }catch(e){} }
+    toast(ok?'คัดลอกสรุปแล้ว วางในแชตได้เลย':'คัดลอกอัตโนมัติไม่ได้ ให้กดค้างที่ข้อความด้านล่างเพื่อคัดลอก');
+  });
+  let armed=false, timer=null;
+  $('#resetBtn').addEventListener('click', e=>{
+    const btn=e.currentTarget;
+    if(!armed){ armed=true; btn.textContent='กดอีกครั้งเพื่อยืนยันการลบ'; btn.classList.add('danger'); timer=setTimeout(()=>{ armed=false; btn.textContent='ลบความคืบหน้า'; btn.classList.remove('danger'); },4000); return; }
+    clearTimeout(timer);
+    const theme=S.theme; S=fresh(); S.theme=theme; save(); renderHUD(); renderMap(); toast('ลบความคืบหน้าแล้ว');
+  });
+}
+
+/* ---------- init ---------- */
+function init(){
+  try{ localStorage.setItem(KEY+'.t','1'); localStorage.removeItem(KEY+'.t'); }catch(e){ storageOK=false; }
+  load(); applyTheme(); renderHUD(); renderMap();
+  $('#homeBtn').addEventListener('click', renderMap);
+  $('#themeBtn').addEventListener('click', ()=>{
+    const dark = S.theme ? S.theme==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    S.theme = dark ? 'light' : 'dark'; applyTheme(); save();
+  });
+}
+if(hasDOM) init();
+return {parseNum, digitsOf, carriesOf, noCarrySum, mulStrategy, mulQ, divQ, addQ, addSteps, genAdd, econTR, econQ, econP, econTC, econProfit, checkPool, pickFact, genEq, eqItem, econDemandEq, econSupplyEq, lhsText, substText, BAL_PUZ, fresh, updateFact, getS:()=>S};
+})();
+if(typeof module!=='undefined') module.exports=MQ;
+</script>
+</body>
+</html>
